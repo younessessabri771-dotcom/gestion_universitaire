@@ -12,6 +12,21 @@ class Grade {
         return rows;
     }
 
+    // Get all grades for students belonging to an admin
+    static async getAllByAdmin(adminId) {
+        const [rows] = await db.execute(`
+            SELECT et.*, e.nom_complet, e.email, m.nom as matiere_nom
+            FROM etudier et
+            JOIN etudiant e ON et.etudiant_id = e.id
+            JOIN matiere m ON et.matiere_id = m.id
+            LEFT JOIN etudier_dans ed ON e.id = ed.etudiant_id
+            LEFT JOIN classe c ON ed.classe_id = c.id
+            WHERE c.admin_id = ?
+            ORDER BY e.nom_complet, m.nom, et.type_controle
+        `, [adminId]);
+        return rows;
+    }
+
     static async getByStudent(etudiantId) {
         const [rows] = await db.execute(`
             SELECT et.*, m.nom as matiere_nom, m.id as matiere_id

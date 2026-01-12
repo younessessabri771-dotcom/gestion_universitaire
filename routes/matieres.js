@@ -3,10 +3,10 @@ const router = express.Router();
 const Matiere = require('../models/Matiere');
 const authMiddleware = require('../middleware/auth');
 
-// Get all subjects (admin only)
+// Get all subjects for the logged-in admin
 router.get('/', authMiddleware('admin'), async (req, res) => {
     try {
-        const matieres = await Matiere.getAll();
+        const matieres = await Matiere.getAllByAdmin(req.user.id);
         res.json(matieres);
     } catch (error) {
         console.error('Erreur get matieres:', error);
@@ -14,7 +14,7 @@ router.get('/', authMiddleware('admin'), async (req, res) => {
     }
 });
 
-// Create subject (admin only)
+// Create subject for the logged-in admin
 router.post('/', authMiddleware('admin'), async (req, res) => {
     try {
         const { nom } = req.body;
@@ -23,7 +23,7 @@ router.post('/', authMiddleware('admin'), async (req, res) => {
             return res.status(400).json({ error: 'Nom de matière requis' });
         }
 
-        const id = await Matiere.create(nom);
+        const id = await Matiere.create(nom, req.user.id);
         res.status(201).json({
             message: 'Matière créée avec succès',
             id,
@@ -38,14 +38,14 @@ router.post('/', authMiddleware('admin'), async (req, res) => {
     }
 });
 
-// Delete subject (admin only)
+// Delete subject (only if it belongs to the admin)
 router.delete('/:id', authMiddleware('admin'), async (req, res) => {
     try {
         const { id } = req.params;
-        const affectedRows = await Matiere.delete(id);
+        const affectedRows = await Matiere.delete(id, req.user.id);
 
         if (affectedRows === 0) {
-            return res.status(404).json({ error: 'Matière non trouvée' });
+            return res.status(404).json({ error: 'Matière non trouvée ou accès refusé' });
         }
 
         res.json({ message: 'Matière supprimée avec succès' });
@@ -56,3 +56,4 @@ router.delete('/:id', authMiddleware('admin'), async (req, res) => {
 });
 
 module.exports = router;
+

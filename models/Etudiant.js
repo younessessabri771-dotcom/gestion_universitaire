@@ -2,6 +2,19 @@ const db = require('../config/database');
 const bcrypt = require('bcrypt');
 
 class Etudiant {
+    // Get all students for a specific admin (via their classes)
+    static async getAllByAdmin(adminId) {
+        const [rows] = await db.execute(`
+            SELECT e.*, c.nom as classe_nom, c.id as classe_id
+            FROM etudiant e
+            LEFT JOIN etudier_dans ed ON e.id = ed.etudiant_id
+            LEFT JOIN classe c ON ed.classe_id = c.id
+            WHERE c.admin_id = ? OR (c.admin_id IS NULL AND ed.classe_id IS NULL)
+            ORDER BY e.nom_complet
+        `, [adminId]);
+        return rows;
+    }
+
     static async getAll() {
         const [rows] = await db.execute(`
             SELECT e.*, c.nom as classe_nom, c.id as classe_id
@@ -98,6 +111,18 @@ class Etudiant {
             WHERE e.id = ?
         `, [id]);
         return rows[0];
+    }
+
+    // Check if a student belongs to an admin's class
+    static async belongsToAdmin(studentId, adminId) {
+        const [rows] = await db.execute(`
+            SELECT e.id
+            FROM etudiant e
+            LEFT JOIN etudier_dans ed ON e.id = ed.etudiant_id
+            LEFT JOIN classe c ON ed.classe_id = c.id
+            WHERE e.id = ? AND c.admin_id = ?
+        `, [studentId, adminId]);
+        return rows.length > 0;
     }
 
     static async validatePassword(plainPassword, hashedPassword) {

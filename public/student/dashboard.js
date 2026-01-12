@@ -69,7 +69,14 @@ async function loadStudentData() {
                     `;
                 } else if (gradeGroup.controls && gradeGroup.controls.length > 0) {
                     // Control mode: Display multiple controls grouped
-                    const average = (gradeGroup.controls.reduce((sum, c) => sum + c.note, 0) / gradeGroup.controls.length).toFixed(2);
+                    // Calculate average ensuring numeric values
+                    const validNotes = gradeGroup.controls
+                        .map(c => parseFloat(c.note))
+                        .filter(note => !isNaN(note));
+
+                    const average = validNotes.length > 0
+                        ? (validNotes.reduce((sum, note) => sum + note, 0) / validNotes.length).toFixed(2)
+                        : 'N/A';
 
                     // First row: Subject name with average
                     gradesHTML += `

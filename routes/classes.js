@@ -3,10 +3,10 @@ const router = express.Router();
 const Classe = require('../models/Classe');
 const authMiddleware = require('../middleware/auth');
 
-// Get all classes (admin only)
+// Get all classes for the logged-in admin
 router.get('/', authMiddleware('admin'), async (req, res) => {
     try {
-        const classes = await Classe.getAll();
+        const classes = await Classe.getAllByAdmin(req.user.id);
         res.json(classes);
     } catch (error) {
         console.error('Erreur get classes:', error);
@@ -14,7 +14,7 @@ router.get('/', authMiddleware('admin'), async (req, res) => {
     }
 });
 
-// Create class (admin only)
+// Create class for the logged-in admin
 router.post('/', authMiddleware('admin'), async (req, res) => {
     try {
         const { nom } = req.body;
@@ -23,7 +23,7 @@ router.post('/', authMiddleware('admin'), async (req, res) => {
             return res.status(400).json({ error: 'Nom de classe requis' });
         }
 
-        const id = await Classe.create(nom);
+        const id = await Classe.create(nom, req.user.id);
         res.status(201).json({
             message: 'Classe créée avec succès',
             id,
@@ -38,14 +38,14 @@ router.post('/', authMiddleware('admin'), async (req, res) => {
     }
 });
 
-// Delete class (admin only)
+// Delete class (only if it belongs to the admin)
 router.delete('/:id', authMiddleware('admin'), async (req, res) => {
     try {
         const { id } = req.params;
-        const affectedRows = await Classe.delete(id);
+        const affectedRows = await Classe.delete(id, req.user.id);
 
         if (affectedRows === 0) {
-            return res.status(404).json({ error: 'Classe non trouvée' });
+            return res.status(404).json({ error: 'Classe non trouvée ou accès refusé' });
         }
 
         res.json({ message: 'Classe supprimée avec succès' });
@@ -56,3 +56,4 @@ router.delete('/:id', authMiddleware('admin'), async (req, res) => {
 });
 
 module.exports = router;
+

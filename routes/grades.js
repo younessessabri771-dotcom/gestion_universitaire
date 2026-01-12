@@ -3,10 +3,10 @@ const router = express.Router();
 const Grade = require('../models/Grade');
 const authMiddleware = require('../middleware/auth');
 
-// Get all grades (admin only)
+// Get all grades for students of the logged-in admin
 router.get('/', authMiddleware('admin'), async (req, res) => {
     try {
-        const grades = await Grade.getAll();
+        const grades = await Grade.getAllByAdmin(req.user.id);
         res.json(grades);
     } catch (error) {
         console.error('Erreur get grades:', error);
@@ -14,7 +14,7 @@ router.get('/', authMiddleware('admin'), async (req, res) => {
     }
 });
 
-// Add/Update grade (admin only) - Supports both simple and control grades
+// Add/Update grade (admin only) - Verify student belongs to admin
 router.post('/', authMiddleware('admin'), async (req, res) => {
     try {
         const { etudiant_id, matiere_id, note, type_controle, note_numerique } = req.body;
@@ -22,6 +22,20 @@ router.post('/', authMiddleware('admin'), async (req, res) => {
         // Validate required fields
         if (!etudiant_id || !matiere_id) {
             return res.status(400).json({ error: 'Étudiant et matière requis' });
+        }
+
+        // Verify that the student belongs to the admin's classes
+        const Etudiant = require('../models/Etudiant');
+        const belongsToAdmin = await Etudiant.belongsToAdmin(etudiant_id, req.user.id);
+        if (!belongsToAdmin) {
+            return res.status(403).json({ error: 'Cet étudiant ne vous appartient pas' });
+        }
+
+        // Verify that the matiere belongs to the admin
+        const Matiere = require('../models/Matiere');
+        const matiere = await Matiere.findByIdAndAdmin(matiere_id, req.user.id);
+        if (!matiere) {
+            return res.status(403).json({ error: 'Cette matière ne vous appartient pas' });
         }
 
         // Check if it's simple mode or control mode

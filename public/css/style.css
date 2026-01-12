@@ -204,6 +204,20 @@ body {
     color: var(--text-muted);
 }
 
+/* Select dropdown options */
+.form-select option {
+    background: #1e293b;
+    color: var(--text-primary);
+    padding: 0.5rem;
+}
+
+.form-select option:hover,
+.form-select option:focus,
+.form-select option:checked {
+    background: var(--primary-color);
+    color: var(--text-primary);
+}
+
 /* Table */
 .table-container {
     overflow-x: auto;

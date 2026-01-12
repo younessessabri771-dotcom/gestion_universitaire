@@ -45,10 +45,10 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// Get all students (admin only)
+// Get all students for the logged-in admin
 router.get('/', authMiddleware('admin'), async (req, res) => {
     try {
-        const students = await Etudiant.getAll();
+        const students = await Etudiant.getAllByAdmin(req.user.id);
         res.json(students);
     } catch (error) {
         console.error('Erreur get students:', error);
@@ -56,13 +56,22 @@ router.get('/', authMiddleware('admin'), async (req, res) => {
     }
 });
 
-// Create student (admin only)
+// Create student (admin only) - verify class belongs to admin
 router.post('/', authMiddleware('admin'), async (req, res) => {
     try {
         const { nom_complet, email, password, classe_id } = req.body;
 
         if (!nom_complet || !email || !password) {
             return res.status(400).json({ error: 'Tous les champs sont requis' });
+        }
+
+        // Verify that the class belongs to the admin
+        if (classe_id) {
+            const Classe = require('../models/Classe');
+            const classe = await Classe.findByIdAndAdmin(classe_id, req.user.id);
+            if (!classe) {
+                return res.status(403).json({ error: 'Cette classe ne vous appartient pas' });
+            }
         }
 
         const existingStudent = await Etudiant.findByEmail(email);
@@ -81,7 +90,7 @@ router.post('/', authMiddleware('admin'), async (req, res) => {
     }
 });
 
-// Update student (admin only)
+// Update student (admin only) - verify student and class belong to admin
 router.put('/:id', authMiddleware('admin'), async (req, res) => {
     try {
         const { id } = req.params;
@@ -89,6 +98,21 @@ router.put('/:id', authMiddleware('admin'), async (req, res) => {
 
         if (!nom_complet || !email) {
             return res.status(400).json({ error: 'Nom et email requis' });
+        }
+
+        // Verify that the student belongs to the admin
+        const belongsToAdmin = await Etudiant.belongsToAdmin(id, req.user.id);
+        if (!belongsToAdmin) {
+            return res.status(403).json({ error: 'Cet étudiant ne vous appartient pas' });
+        }
+
+        // Verify that the new class belongs to the admin
+        if (classe_id) {
+            const Classe = require('../models/Classe');
+            const classe = await Classe.findByIdAndAdmin(classe_id, req.user.id);
+            if (!classe) {
+                return res.status(403).json({ error: 'Cette classe ne vous appartient pas' });
+            }
         }
 
         await Etudiant.update(id, nom_complet, email, classe_id);
@@ -99,10 +123,17 @@ router.put('/:id', authMiddleware('admin'), async (req, res) => {
     }
 });
 
-// Delete student (admin only)
+// Delete student (admin only) - verify student belongs to admin
 router.delete('/:id', authMiddleware('admin'), async (req, res) => {
     try {
         const { id } = req.params;
+
+        // Verify that the student belongs to the admin
+        const belongsToAdmin = await Etudiant.belongsToAdmin(id, req.user.id);
+        if (!belongsToAdmin) {
+            return res.status(403).json({ error: 'Cet étudiant ne vous appartient pas' });
+        }
+
         const affectedRows = await Etudiant.delete(id);
 
         if (affectedRows === 0) {
