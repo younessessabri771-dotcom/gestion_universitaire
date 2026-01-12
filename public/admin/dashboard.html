@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Administrateur</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="animated-bg"></div>
+
+    <div class="container" style="max-width: 1400px; padding: 2rem 1rem;">
+        <header
+            style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">Dashboard Administrateur</h1>
+                <p style="color: var(--text-secondary);">Bienvenue, <span id="adminEmail"></span></p>
+            </div>
+            <button onclick="logout()" class="btn btn-danger">Déconnexion</button>
+        </header>
+
+        <div id="alert-container"></div>
+
+        <div class="glass-card">
+            <div class="tabs">
+                <button class="tab active" data-tab="classes">📚 Classes</button>
+                <button class="tab" data-tab="students">👨‍🎓 Étudiants</button>
+                <button class="tab" data-tab="matieres">📖 Matières</button>
+                <button class="tab" data-tab="grades">📝 Notes</button>
+            </div>
+
+            <!-- Classes Tab -->
+            <div id="classes-tab" class="tab-content active">
+                <h2 style="margin-bottom: 1.5rem;">Gestion des Classes</h2>
+
+                <form id="addClassForm" style="margin-bottom: 2rem;">
+                    <div style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+                        <div class="form-group" style="flex: 1; min-width: 250px; margin-bottom: 0;">
+                            <label class="form-label" for="className">Nom de la classe</label>
+                            <input type="text" id="className" class="form-input" placeholder="Ex: Licence 1" required>
+                        </div>
+                        <button type="submit" class="btn btn-success">Ajouter la classe</button>
+                    </div>
+                </form>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nom</th>
+                                <th>Date de création</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="classesTableBody">
+                            <tr>
+                                <td colspan="4" style="text-align: center;">Chargement...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Students Tab -->
+            <div id="students-tab" class="tab-content">
+                <h2 style="margin-bottom: 1.5rem;">Gestion des Étudiants</h2>
+
+                <form id="addStudentForm" style="margin-bottom: 2rem;">
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label" for="studentName">Nom complet</label>
+                            <input type="text" id="studentName" class="form-input" placeholder="Ex: Jean Dupont"
+                                required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label" for="studentEmail">Email</label>
+                            <input type="email" id="studentEmail" class="form-input" placeholder="etudiant@exemple.com"
+                                required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label" for="studentPassword">Mot de passe</label>
+                            <input type="password" id="studentPassword" class="form-input" placeholder="••••••••"
+                                required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label" for="studentClass">Classe</label>
+                            <select id="studentClass" class="form-select">
+                                <option value="">Aucune</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success">Ajouter l'étudiant</button>
+                </form>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nom</th>
+                                <th>Email</th>
+                                <th>Classe</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsTableBody">
+                            <tr>
+                                <td colspan="5" style="text-align: center;">Chargement...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Matieres Tab -->
+            <div id="matieres-tab" class="tab-content">
+                <h2 style="margin-bottom: 1.5rem;">Gestion des Matières</h2>
+
+                <form id="addMatiereForm" style="margin-bottom: 2rem;">
+                    <div style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+                        <div class="form-group" style="flex: 1; min-width: 250px; margin-bottom: 0;">
+                            <label class="form-label" for="matiereName">Nom de la matière</label>
+                            <input type="text" id="matiereName" class="form-input" placeholder="Ex: Mathématiques"
+                                required>
+                        </div>
+                        <button type="submit" class="btn btn-success">Ajouter la matière</button>
+                    </div>
+                </form>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nom</th>
+                                <th>Date de création</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="matieresTableBody">
+                            <tr>
+                                <td colspan="4" style="text-align: center;">Chargement...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Grades Tab -->
+            <div id="grades-tab" class="tab-content">
+                <h2 style="margin-bottom: 1.5rem;">Gestion des Notes</h2>
+
+                <!-- Mode Selector -->
+                <div
+                    style="margin-bottom: 2rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: var(--radius-md);">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Mode de saisie:</label>
+                    <div style="display: flex; gap: 1rem;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="radio" name="gradeMode" value="simple" checked style="margin-right: 0.5rem;">
+                            <span>📝 Mode Simple (note globale)</span>
+                        </label>
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="radio" name="gradeMode" value="control" style="margin-right: 0.5rem;">
+                            <span>📊 Mode Contrôles (notes multiples)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <form id="addGradeForm" style="margin-bottom: 2rem;">
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label" for="gradeStudent">Étudiant</label>
+                            <select id="gradeStudent" class="form-select" required>
+                                <option value="">Sélectionner un étudiant</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label" for="gradeMatiere">Matière</label>
+                            <select id="gradeMatiere" class="form-select" required>
+                                <option value="">Sélectionner une matière</option>
+                            </select>
+                        </div>
+                        <!-- Simple Mode Field -->
+                        <div id="simpleGradeField" class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label" for="gradeNote">Note</label>
+                            <input type="text" id="gradeNote" class="form-input" placeholder="Ex: 15/20">
+                        </div>
+                        <!-- Control Mode Fields (hidden by default) -->
+                        <div id="controlTypeField" class="form-group" style="margin-bottom: 0; display: none;">
+                            <label class="form-label" for="gradeControlType">Type de contrôle</label>
+                            <select id="gradeControlType" class="form-select">
+                                <option value="">Sélectionner le type</option>
+                                <option value="Premier contrôle">Premier contrôle</option>
+                                <option value="Deuxième contrôle">Deuxième contrôle</option>
+                                <option value="Troisième contrôle">Troisième contrôle</option>
+                                <option value="Quatrième contrôle">Quatrième contrôle</option>
+                                <option value="Activités intégrées">Activités intégrées</option>
+                            </select>
+                        </div>
+                        <div id="controlNoteField" class="form-group" style="margin-bottom: 0; display: none;">
+                            <label class="form-label" for="gradeNoteNumerique">Note (sur 20)</label>
+                            <input type="number" id="gradeNoteNumerique" class="form-input" placeholder="Ex: 14.5"
+                                step="0.01" min="0" max="20">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success">Ajouter la note</button>
+                </form>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Étudiant</th>
+                                <th>Email</th>
+                                <th>Matière</th>
+                                <th>Type/Note</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gradesTableBody">
+                            <tr>
+                                <td colspan="6" style="text-align: center;">Chargement...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Student Modal -->
+    <div id="editModal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="glass-card" style="width: 90%; max-width: 500px;">
+            <h2 style="margin-bottom: 1.5rem;">Modifier l'étudiant</h2>
+            <form id="editStudentForm">
+                <input type="hidden" id="editStudentId">
+                <div class="form-group">
+                    <label class="form-label" for="editStudentName">Nom complet</label>
+                    <input type="text" id="editStudentName" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="editStudentEmail">Email</label>
+                    <input type="email" id="editStudentEmail" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="editStudentClass">Classe</label>
+                    <select id="editStudentClass" class="form-select">
+                        <option value="">Aucune</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Enregistrer</button>
+                    <button type="button" onclick="closeEditModal()" class="btn btn-danger"
+                        style="flex: 1;">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/admin/dashboard.js"></script>
+</body>
+
+</html>

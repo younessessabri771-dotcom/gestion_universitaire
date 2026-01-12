@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Étudiant</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="animated-bg"></div>
+
+    <div class="container" style="max-width: 1200px; padding: 2rem 1rem;">
+        <header
+            style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">Dashboard Étudiant</h1>
+                <p style="color: var(--text-secondary);">Bienvenue, <span id="studentName"></span></p>
+            </div>
+            <button onclick="logout()" class="btn btn-danger">Déconnexion</button>
+        </header>
+
+        <div class="glass-card" style="margin-bottom: 2rem;">
+            <h2 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                👤 Informations Personnelles
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+                <div>
+                    <p style="color: var(--text-muted); margin-bottom: 0.25rem; font-size: 0.875rem;">Nom Complet</p>
+                    <p style="font-size: 1.125rem; font-weight: 600;" id="infoName">-</p>
+                </div>
+                <div>
+                    <p style="color: var(--text-muted); margin-bottom: 0.25rem; font-size: 0.875rem;">Email</p>
+                    <p style="font-size: 1.125rem; font-weight: 600;" id="infoEmail">-</p>
+                </div>
+                <div>
+                    <p style="color: var(--text-muted); margin-bottom: 0.25rem; font-size: 0.875rem;">Classe</p>
+                    <p style="font-size: 1.125rem; font-weight: 600;" id="infoClasse">-</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <h2 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                📝 Mes Notes
+            </h2>
+
+            <div id="noGradesMessage"
+                style="display: none; text-align: center; padding: 2rem; color: var(--text-muted);">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📚</div>
+                <p style="font-size: 1.125rem;">Aucune note disponible pour le moment</p>
+            </div>
+
+            <div id="gradesContainer" class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th colspan="2">Matière / Type</th>
+                            <th>Note</th>
+                            <th>Date d'ajout</th>
+                        </tr>
+                    </thead>
+                    <tbody id="gradesTableBody">
+                        <tr>
+                            <td colspan="4" style="text-align: center;">
+                                <div class="spinner"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="/student/dashboard.js"></script>
+</body>
+
+</html>

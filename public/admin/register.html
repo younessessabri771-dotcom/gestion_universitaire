@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription Administrateur</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="animated-bg"></div>
+
+    <main class="container" style="min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+        <div style="width: 100%; max-width: 450px;">
+            <div class="glass-card">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <div
+                        style="width: 80px; height: 80px; margin: 0 auto 1rem; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem;">
+                        👨‍💼
+                    </div>
+                    <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">Inscription Admin</h1>
+                    <p style="color: var(--text-secondary);">Créez votre compte administrateur</p>
+                </div>
+
+                <div id="alert-container"></div>
+
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email</label>
+                        <input type="email" id="email" class="form-input" placeholder="admin@exemple.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="password">Mot de passe</label>
+                        <input type="password" id="password" class="form-input" placeholder="••••••••" required
+                            minlength="6">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="confirmPassword">Confirmer le mot de passe</label>
+                        <input type="password" id="confirmPassword" class="form-input" placeholder="••••••••" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                        S'inscrire
+                    </button>
+                </form>
+
+                <div style="text-align: center; margin-top: 1.5rem;">
+                    <p style="color: var(--text-secondary);">
+                        Déjà un compte ?
+                        <a href="/admin/login.html"
+                            style="color: var(--primary-light); text-decoration: none; font-weight: 600;">
+                            Se connecter
+                        </a>
+                    </p>
+                </div>
+
+                <div style="text-align: center; margin-top: 1rem;">
+                    <a href="/" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">
+                        ← Retour à l'accueil
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+
+        function showAlert(message, type = 'error') {
+            const alertContainer = document.getElementById('alert-container');
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+            alertContainer.innerHTML = `<div class="alert ${alertClass}">${message}</div>`;
+            setTimeout(() => alertContainer.innerHTML = '', 5000);
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (password !== confirmPassword) {
+                showAlert('Les mots de passe ne correspondent pas');
+                return;
+            }
+
+            if (password.length < 6) {
+                showAlert('Le mot de passe doit contenir au moins 6 caractères');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/admin/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('userRole', 'admin');
+                    localStorage.setItem('userEmail', data.admin.email);
+                    showAlert('Inscription réussie! Redirection...', 'success');
+                    setTimeout(() => window.location.href = '/admin/dashboard.html', 1000);
+                } else {
+                    showAlert(data.error || 'Erreur d\'inscription');
+                }
+            } catch (error) {
+                showAlert('Erreur de connexion au serveur');
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+
+</html>
