@@ -10,20 +10,22 @@ CREATE TABLE IF NOT EXISTS admin (
 
 CREATE TABLE IF NOT EXISTS classe (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nom VARCHAR(100) UNIQUE NOT NULL,
+    nom VARCHAR(100) NOT NULL,
     admin_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (admin_id) REFERENCES admin(id) ON DELETE CASCADE
+    FOREIGN KEY (admin_id) REFERENCES admin(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_classe_per_admin (nom, admin_id)
 );
 
 CREATE INDEX idx_classe_admin_id ON classe(admin_id);
 
 CREATE TABLE IF NOT EXISTS matiere (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nom VARCHAR(100) UNIQUE NOT NULL,
+    nom VARCHAR(100) NOT NULL,
     admin_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (admin_id) REFERENCES admin(id) ON DELETE CASCADE
+    FOREIGN KEY (admin_id) REFERENCES admin(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_matiere_per_admin (nom, admin_id)
 );
 
 CREATE INDEX idx_matiere_admin_id ON matiere(admin_id);
